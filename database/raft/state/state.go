@@ -129,6 +129,11 @@ func (s *State) Apply(data []byte, index uint64) (satisfied bool, err error) {
 		case statepb.Op_SET:
 			s.state[op.Key] = op.Value
 			s.version[op.Key] = index
+		case statepb.Op_DELETE:
+			delete(s.state, op.Key)
+			delete(s.version, op.Key)
+			//TODO (ameets):increment version or delete entry?
+			//s.version[op.Key] = index
 		default:
 			return false, errors.New("unknown operation type")
 		}
@@ -152,6 +157,19 @@ func Set(key string, value []byte) (instruction []byte) {
 			Type:  statepb.Op_SET,
 			Key:   key,
 			Value: value,
+		}},
+	})
+
+	return b
+}
+
+// Delete encodes a delete operation for a given key.
+// TODO (ameets):further commentary (?)
+func Delete(key string) (instruction []byte) {
+	b, _ := proto.Marshal(&statepb.Instruction{
+		Operations: []*statepb.Op{{
+			Type: statepb.Op_DELETE,
+			Key:  key,
 		}},
 	})
 

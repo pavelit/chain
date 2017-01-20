@@ -5,6 +5,7 @@ package statepb;
 message Op {
 	enum Type {
 		SET = 0;
+		DELETE = 1;
 	}
 	Type type = 1;
 	string key = 2;

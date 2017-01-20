@@ -395,7 +395,14 @@ func (sv *Service) Set(ctx context.Context, key string, val []byte) error {
 	return sv.exec(ctx, b)
 }
 
-//
+// Delete deletes a value in the key-value storage.
+// if successful, it returns after the value is deleted from the raft log.
+// TODO (ameets): is RawNode possible/applicable?
+func (sv *Service) Delete(ctx context.Context, key string) error {
+	b := state.Delete(key)
+	return sv.exec(ctx, b)
+}
+
 func (sv *Service) allocNodeID(ctx context.Context) (uint64, error) {
 	// encode w/ json for now: b with a wctx rand id
 	// lock state via mutex to pull nextID val, then call increment
