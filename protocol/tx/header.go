@@ -15,8 +15,6 @@ type Header struct {
 func (Header) Type() string         { return "txheader" }
 func (h *Header) Body() interface{} { return h.body }
 
-func (Header) Ordinal() int { return -1 }
-
 func newHeader(version uint64, resultRefs []bc.Hash, dataRef bc.Hash, minTimeMS, maxTimeMS uint64) *Header {
 	h := new(Header)
 	h.body.Version = version

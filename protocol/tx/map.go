@@ -49,7 +49,7 @@ func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *Header, entryMap map[bc.Hash]E
 				}
 			}
 			var spID bc.Hash
-			spID, _, err = addEntry(newSpend(oldSp.SpentOutputID, inpDataRef, i))
+			spID, _, err = addEntry(newSpend(oldSp.SpentOutputID, inpDataRef))
 			if err != nil {
 				err = errors.Wrapf(err, "adding spend entry for input %d", i)
 				return
@@ -109,7 +109,7 @@ func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *Header, entryMap map[bc.Hash]E
 			val := inp.AssetAmount()
 
 			var issID bc.Hash
-			issID, _, err = addEntry(newIssuance(nonceRef, val, inpDataRef, i))
+			issID, _, err = addEntry(newIssuance(nonceRef, val, inpDataRef))
 			if err != nil {
 				err = errors.Wrapf(err, "adding issuance entry for input %d", i)
 				return
@@ -149,7 +149,7 @@ func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *Header, entryMap map[bc.Hash]E
 		var resultID bc.Hash
 		if vmutil.IsUnspendable(out.ControlProgram) {
 			// retirement
-			resultID, _, err = addEntry(newRetirement(s, outDataRef, i))
+			resultID, _, err = addEntry(newRetirement(s, outDataRef))
 			if err != nil {
 				err = errors.Wrapf(err, "adding retirement entry for output %d", i)
 				return
@@ -157,7 +157,7 @@ func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *Header, entryMap map[bc.Hash]E
 		} else {
 			// non-retirement
 			prog := bc.Program{out.VMVersion, out.ControlProgram}
-			resultID, _, err = addEntry(newOutput(s, prog, outDataRef, i))
+			resultID, _, err = addEntry(newOutput(s, prog, outDataRef))
 			if err != nil {
 				err = errors.Wrapf(err, "adding output entry for output %d", i)
 				return

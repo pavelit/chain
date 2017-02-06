@@ -47,7 +47,7 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 		txRefDataHash = d.body
 	}
 
-	hashes.VMContexts = make([]*bc.VMContext, len(oldTx.Inputs))
+	hashes.VMContexts = make(map[bc.Hash]*bc.VMContext)
 
 	for entryID, ent := range entries {
 		switch ent := ent.(type) {
@@ -76,7 +76,7 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 				}
 			}
 			vmc.NonceID = &ent.body.AnchorRef
-			hashes.VMContexts[ent.Ordinal()] = vmc
+			hashes.VMContexts[entryID] = vmc
 
 		case *Spend:
 			vmc := newVMContext(entryID, hashes.ID, txRefDataHash)
@@ -86,7 +86,7 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 				}
 			}
 			vmc.OutputID = &ent.body.SpentOutput
-			hashes.VMContexts[ent.Ordinal()] = vmc
+			hashes.VMContexts[entryID] = vmc
 		}
 	}
 

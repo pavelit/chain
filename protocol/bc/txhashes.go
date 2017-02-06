@@ -9,7 +9,7 @@ type (
 			ID           Hash
 			ExpirationMS uint64
 		}
-		VMContexts []*VMContext // one per old-style Input
+		VMContexts map[Hash]*VMContext // one per old-style Input
 	}
 
 	VMContext struct {
@@ -30,6 +30,6 @@ type (
 // (obvious name is TxHashes, same as the type)
 var TxHashesFunc func(*TxData) (*TxHashes, error)
 
-func (t TxHashes) SigHash(n uint32) Hash {
-	return t.VMContexts[n].TxSigHash
+func (t TxHashes) SigHash(entryRef Hash) Hash {
+	return t.VMContexts[entryRef].TxSigHash
 }
