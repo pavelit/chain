@@ -29,7 +29,7 @@ func (d *data) Body() interface{} { return d.body }
 
 func (data) Ordinal() int { return -1 }
 
-func newData(hash bc.Hash) entry {
+func newData(hash bc.Hash) Entry {
 	d := new(data)
 	d.body = hash
 	return d

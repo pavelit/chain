@@ -2,7 +2,7 @@ package tx
 
 import "chain/protocol/bc"
 
-type issuance struct {
+type Issuance struct {
 	body struct {
 		Anchor  entryRef
 		Value   bc.AssetAmount
@@ -12,13 +12,13 @@ type issuance struct {
 	ordinal int
 }
 
-func (issuance) Type() string           { return "issuance1" }
-func (iss *issuance) Body() interface{} { return iss.body }
+func (Issuance) Type() string           { return "issuance1" }
+func (iss *Issuance) Body() interface{} { return iss.body }
 
-func (iss issuance) Ordinal() int { return iss.ordinal }
+func (iss Issuance) Ordinal() int { return iss.ordinal }
 
-func newIssuance(anchor entryRef, value bc.AssetAmount, data entryRef, ordinal int) *issuance {
-	iss := new(issuance)
+func newIssuance(anchor entryRef, value bc.AssetAmount, data entryRef, ordinal int) *Issuance {
+	iss := new(Issuance)
 	iss.body.Anchor = anchor
 	iss.body.Value = value
 	iss.body.Data = data

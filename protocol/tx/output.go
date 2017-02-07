@@ -1,6 +1,6 @@
 package tx
 
-type output struct {
+type Output struct {
 	body struct {
 		Source         valueSource
 		ControlProgram program
@@ -10,13 +10,13 @@ type output struct {
 	ordinal int
 }
 
-func (output) Type() string         { return "output1" }
-func (o *output) Body() interface{} { return o.body }
+func (Output) Type() string         { return "output1" }
+func (o *Output) Body() interface{} { return o.body }
 
-func (o output) Ordinal() int { return o.ordinal }
+func (o Output) Ordinal() int { return o.ordinal }
 
-func newOutput(source valueSource, controlProgram program, data entryRef, ordinal int) *output {
-	out := new(output)
+func newOutput(source valueSource, controlProgram program, data entryRef, ordinal int) *Output {
+	out := new(Output)
 	out.body.Source = source
 	out.body.ControlProgram = controlProgram
 	out.body.Data = data

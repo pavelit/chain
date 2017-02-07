@@ -9,12 +9,12 @@ import (
 	"chain/protocol/vmutil"
 )
 
-func mapTx(tx *bc.TxData) (headerID entryRef, hdr *header, entryMap map[entryRef]entry, err error) {
+func mapTx(tx *bc.TxData) (headerID entryRef, hdr *header, entryMap map[entryRef]Entry, err error) {
 	var refdataID entryRef
 
-	entryMap = make(map[entryRef]entry)
+	entryMap = make(map[entryRef]Entry)
 
-	addEntry := func(e entry) (id entryRef, entry entry, err error) {
+	addEntry := func(e Entry) (id entryRef, entry Entry, err error) {
 		id, err = entryID(e)
 		if err != nil {
 			err = errors.Wrapf(err, "computing entryID for %s entry", e.Type())
@@ -167,7 +167,7 @@ func mapTx(tx *bc.TxData) (headerID entryRef, hdr *header, entryMap map[entryRef
 		results = append(results, resultID)
 	}
 
-	var h entry
+	var h Entry
 	headerID, h, err = addEntry(newHeader(tx.Version, results, refdataID, tx.MinTime, tx.MaxTime))
 	if err != nil {
 		err = errors.Wrap(err, "adding header entry")

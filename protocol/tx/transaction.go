@@ -26,7 +26,7 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 	hashes.OutputIDs = make([]bc.Hash, len(header.body.Results))
 	for i, resultHash := range header.body.Results {
 		result := entries[resultHash]
-		if _, ok := result.(*output); ok {
+		if _, ok := result.(*Output); ok {
 			hashes.OutputIDs[i] = bc.Hash(resultHash)
 		}
 	}
@@ -68,13 +68,13 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 			}{bc.Hash(entryID), tr.body.MaxTimeMS}
 			hashes.Issuances = append(hashes.Issuances, iss)
 
-		case *issuance:
+		case *Issuance:
 			vmc := newVMContext(bc.Hash(entryID), hashes.ID, txRefDataHash)
 			vmc.RefDataHash = bc.Hash(ent.body.Data)
 			vmc.NonceID = (*bc.Hash)(&ent.body.Anchor)
 			hashes.VMContexts[ent.Ordinal()] = vmc
 
-		case *spend:
+		case *Spend:
 			vmc := newVMContext(bc.Hash(entryID), hashes.ID, txRefDataHash)
 			vmc.RefDataHash = bc.Hash(ent.body.Data)
 			vmc.OutputID = (*bc.Hash)(&ent.body.SpentOutput)

@@ -5,7 +5,7 @@ import "chain/protocol/bc"
 type valueSource struct {
 	Ref      entryRef
 	Value    bc.AssetAmount
-	Position uint64 // what int do we actually want?
+	Position uint64 // zero unless Ref is a mux
 }
 
 type valueDestination struct {

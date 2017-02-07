@@ -11,7 +11,7 @@ import (
 	"chain/protocol/bc"
 )
 
-type entry interface {
+type Entry interface {
 	Type() string
 	Body() interface{}
 
@@ -29,7 +29,7 @@ type extHash bc.Hash
 
 var errInvalidValue = errors.New("invalid value")
 
-func entryID(e entry) (entryRef, error) {
+func entryID(e Entry) (entryRef, error) {
 	h := sha3pool.Get256()
 	defer sha3pool.Put256(h)
 
