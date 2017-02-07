@@ -23,8 +23,8 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 	hashes.ID = bc.Hash(txid)
 
 	// OutputIDs
-	hashes.OutputIDs = make([]bc.Hash, len(header.body.Results))
-	for i, resultHash := range header.body.Results {
+	hashes.OutputIDs = make([]bc.Hash, len(header.body.ResultRefs))
+	for i, resultHash := range header.body.ResultRefs {
 		result := entries[resultHash]
 		if _, ok := result.(*Output); ok {
 			hashes.OutputIDs[i] = bc.Hash(resultHash)
@@ -32,11 +32,11 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 	}
 
 	var txRefDataHash bc.Hash
-	if header.body.Data == (entryRef{}) {
+	if header.body.DataRef == (bc.Hash{}) {
 		// no data entry
 		txRefDataHash = bc.EmptyStringHash
 	} else {
-		dEntry, ok := entries[header.body.Data]
+		dEntry, ok := entries[header.body.DataRef]
 		if !ok {
 			return nil, fmt.Errorf("header refers to nonexistent data entry")
 		}
@@ -53,7 +53,7 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 		switch ent := ent.(type) {
 		case *nonce:
 			// TODO: check time range is within network-defined limits
-			trID := ent.body.TimeRange
+			trID := ent.body.TimeRangeRef
 			trEntry, ok := entries[trID]
 			if !ok {
 				return nil, fmt.Errorf("nonce entry refers to nonexistent timerange entry")
@@ -65,19 +65,27 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 			iss := struct {
 				ID           bc.Hash
 				ExpirationMS uint64
-			}{bc.Hash(entryID), tr.body.MaxTimeMS}
+			}{entryID, tr.body.MaxTimeMS}
 			hashes.Issuances = append(hashes.Issuances, iss)
 
 		case *Issuance:
-			vmc := newVMContext(bc.Hash(entryID), hashes.ID, txRefDataHash)
-			vmc.RefDataHash = bc.Hash(ent.body.Data)
-			vmc.NonceID = (*bc.Hash)(&ent.body.Anchor)
+			vmc := newVMContext(entryID, hashes.ID, txRefDataHash)
+			if dEntry, ok := entries[ent.body.DataRef]; ok {
+				if d, ok := dEntry.(*data); ok {
+					vmc.RefDataHash = d.body
+				}
+			}
+			vmc.NonceID = &ent.body.AnchorRef
 			hashes.VMContexts[ent.Ordinal()] = vmc
 
 		case *Spend:
-			vmc := newVMContext(bc.Hash(entryID), hashes.ID, txRefDataHash)
-			vmc.RefDataHash = bc.Hash(ent.body.Data)
-			vmc.OutputID = (*bc.Hash)(&ent.body.SpentOutput)
+			vmc := newVMContext(entryID, hashes.ID, txRefDataHash)
+			if dEntry, ok := entries[ent.body.DataRef]; ok {
+				if d, ok := dEntry.(*data); ok {
+					vmc.RefDataHash = d.body
+				}
+			}
+			vmc.OutputID = &ent.body.SpentOutput
 			hashes.VMContexts[ent.Ordinal()] = vmc
 		}
 	}

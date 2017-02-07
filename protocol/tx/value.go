@@ -3,12 +3,12 @@ package tx
 import "chain/protocol/bc"
 
 type valueSource struct {
-	Ref      entryRef
+	Ref      bc.Hash
 	Value    bc.AssetAmount
 	Position uint64 // zero unless Ref is a mux
 }
 
 type valueDestination struct {
-	Ref      entryRef
+	Ref      bc.Hash
 	Position uint64
 }

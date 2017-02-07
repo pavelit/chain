@@ -1,10 +1,12 @@
 package tx
 
+import "chain/protocol/bc"
+
 type nonce struct {
 	body struct {
-		Program   program
-		TimeRange entryRef
-		ExtHash   extHash
+		Program      program
+		TimeRangeRef bc.Hash
+		ExtHash      extHash
 	}
 }
 
@@ -13,9 +15,9 @@ func (n *nonce) Body() interface{} { return n.body }
 
 func (nonce) Ordinal() int { return -1 }
 
-func newNonce(p program, tr entryRef) *nonce {
+func newNonce(p program, trRef bc.Hash) *nonce {
 	n := new(nonce)
 	n.body.Program = p
-	n.body.TimeRange = tr
+	n.body.TimeRangeRef = trRef
 	return n
 }
