@@ -9,6 +9,7 @@ import (
 	// TODO(bobg): very little of this package depends on bc, consider trying to remove the dependency
 	"chain/errors"
 	"chain/protocol/bc"
+	"chain/protocol/tx"
 )
 
 const initialRunLimit = 10000
@@ -33,9 +34,9 @@ type virtualMachine struct {
 	dataStack [][]byte
 	altStack  [][]byte
 
-	tx         *bc.Tx
-	txContext  bc.VMContext
-	inputIndex uint32
+	tx        *bc.Tx
+	txContext bc.VMContext
+	input     tx.EntryRef // input.Entry must be non-nil
 
 	block *bc.Block
 }
@@ -56,14 +57,13 @@ func VerifyTxInput(tx *bc.Tx, inputIndex uint32) (err error) {
 	return verifyTxInput(tx, inputIndex)
 }
 
-func verifyTxInput(tx *bc.Tx, inputIndex uint32) error {
-	if inputIndex < 0 || inputIndex >= uint32(len(tx.Inputs)) {
-		return ErrBadValue
-	}
-
-	txinput := tx.Inputs[inputIndex]
-
+func verifyTxInput(tx *bc.Tx, input tx.EntryRef) error {
 	expansionReserved := tx.Version == 1
+
+	inputID, err := input.Hash()
+	if err != nil {
+		return err
+	}
 
 	f := func(vmversion uint64, prog []byte, args [][]byte) error {
 		if vmversion != 1 {
@@ -71,9 +71,9 @@ func verifyTxInput(tx *bc.Tx, inputIndex uint32) error {
 		}
 
 		vm := virtualMachine{
-			tx:         tx,
-			txContext:  *tx.VMContexts[inputIndex],
-			inputIndex: inputIndex,
+			tx:        tx,
+			txContext: *tx.VMContexts[inputID],
+			input:     input,
 
 			expansionReserved: expansionReserved,
 

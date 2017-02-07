@@ -13,7 +13,7 @@ type Spend struct {
 func (Spend) Type() string         { return "spend1" }
 func (s *Spend) Body() interface{} { return s.body }
 
-func newSpend(spentOutput bc.OutputID, data EntryRef, ordinal int) *Spend {
+func newSpend(spentOutput bc.OutputID, data EntryRef) *Spend {
 	s := new(Spend)
 	s.body.SpentOutput = spentOutput
 	s.body.Data = data

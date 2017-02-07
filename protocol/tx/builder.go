@@ -116,7 +116,7 @@ func (b *Builder) Build() (bc.Hash, *header, map[bc.Hash]Entry) {
 		o := newOutput(s, po.controlProg, po.data)
 		oID := mustEntryID(o)
 		b.entries[oID] = o
-		b.h.body.Results = append(b.h.body.Results, oID)
+		b.h.body.Results = append(b.h.body.Results, EntryRef{Entry: o, ID: &oID})
 	}
 	for _, pr := range b.retirements {
 		s := valueSource{
@@ -128,14 +128,14 @@ func (b *Builder) Build() (bc.Hash, *header, map[bc.Hash]Entry) {
 		r := newRetirement(s, pr.data)
 		rID := mustEntryID(r)
 		b.entries[rID] = r
-		b.h.body.Results = append(b.h.body.Results, rID)
+		b.h.body.Results = append(b.h.body.Results, EntryRef{Entry: r, ID: &rID})
 	}
 	hID := mustEntryID(b.h)
 	b.entries[hID] = b.h
 	return hID, b.h, b.entries
 }
 
-func mustEntryID(e entry) bc.Hash {
+func mustEntryID(e Entry) bc.Hash {
 	res, err := entryID(e)
 	if err != nil {
 		panic(err)

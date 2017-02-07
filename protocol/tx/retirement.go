@@ -11,7 +11,7 @@ type Retirement struct {
 func (Retirement) Type() string         { return "retirement1" }
 func (r *Retirement) Body() interface{} { return r.body }
 
-func newRetirement(source valueSource, data EntryRef, ordinal int) *Retirement {
+func newRetirement(source valueSource, data EntryRef) *Retirement {
 	r := new(Retirement)
 	r.body.Source = source
 	r.body.Data = data
