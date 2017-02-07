@@ -11,9 +11,36 @@ import (
 	"chain/protocol/bc"
 )
 
-type Entry interface {
-	Type() string
-	Body() interface{}
+type (
+	Entry interface {
+		Type() string
+		Body() interface{}
+	}
+
+	// EntryRef holds one or both of an entry and its id. If the entry is
+	// present and the id is not, the id can be generated (and then
+	// cached) on demand.
+	EntryRef struct {
+		Entry
+		ID *bc.Hash
+	}
+
+	hasher interface {
+		Hash() (bc.Hash, error)
+	}
+)
+
+// Hash returns the EntryRef's cached entry ID, computing it first if
+// necessary. Satisfies the hasher interface.
+func (r *EntryRef) Hash() (bc.Hash, error) {
+	if r.ID == nil {
+		h, err := entryID(r.Entry)
+		if err != nil {
+			return bc.Hash{}, err
+		}
+		r.ID = &h
+	}
+	return *r.ID, nil
 }
 
 type extHash bc.Hash
@@ -46,6 +73,13 @@ func entryID(e Entry) (bc.Hash, error) {
 
 func writeForHash(w io.Writer, c interface{}) error {
 	switch v := c.(type) {
+	case hasher:
+		h, err := v.Hash()
+		if err != nil {
+			return errors.Wrap(err, "computing hash")
+		}
+		_, err = w.Write(h[:])
+		return errors.Wrap(err, "writing hash")
 	case byte:
 		_, err := w.Write([]byte{v})
 		return errors.Wrap(err, "writing byte for hash")

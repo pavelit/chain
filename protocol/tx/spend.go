@@ -5,7 +5,7 @@ import "chain/protocol/bc"
 type Spend struct {
 	body struct {
 		SpentOutput bc.OutputID
-		DataRef     bc.Hash
+		Data        EntryRef
 		ExtHash     extHash
 	}
 }
@@ -13,9 +13,9 @@ type Spend struct {
 func (Spend) Type() string         { return "spend1" }
 func (s *Spend) Body() interface{} { return s.body }
 
-func newSpend(spentOutput bc.OutputID, dataRef bc.Hash, ordinal int) *Spend {
+func newSpend(spentOutput bc.OutputID, data EntryRef, ordinal int) *Spend {
 	s := new(Spend)
 	s.body.SpentOutput = spentOutput
-	s.body.DataRef = dataRef
+	s.body.Data = data
 	return s
 }
