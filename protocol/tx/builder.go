@@ -47,7 +47,7 @@ func (b *Builder) AddIssuance(nonce EntryRef, value bc.AssetAmount, data EntryRe
 	iss := newIssuance(nonce, value, data)
 	issID := mustEntryID(iss)
 	s := valueSource{
-		Ref:   issID,
+		Ref:   EntryRef{Entry: iss, ID: &issID},
 		Value: value,
 	}
 	b.m.body.Sources = append(b.m.body.Sources, s)
@@ -87,7 +87,7 @@ func (b *Builder) AddSpend(spentOutput EntryRef, value bc.AssetAmount, data Entr
 	sp := newSpend(spentOutput, data)
 	spID := mustEntryID(sp)
 	src := valueSource{
-		Ref:   spID,
+		Ref:   EntryRef{Entry: sp, ID: &spID},
 		Value: value,
 	}
 	b.m.body.Sources = append(b.m.body.Sources, src)
@@ -108,7 +108,7 @@ func (b *Builder) Build() (bc.Hash, *Header, map[bc.Hash]Entry) {
 	var n uint64
 	for _, po := range b.outputs {
 		s := valueSource{
-			Ref:      muxID,
+			Ref:      EntryRef{Entry: b.m, ID: &muxID},
 			Value:    po.value,
 			Position: n,
 		}
@@ -120,7 +120,7 @@ func (b *Builder) Build() (bc.Hash, *Header, map[bc.Hash]Entry) {
 	}
 	for _, pr := range b.retirements {
 		s := valueSource{
-			Ref:      muxID,
+			Ref:      EntryRef{Entry: b.m, ID: &muxID},
 			Value:    pr.value,
 			Position: n,
 		}
