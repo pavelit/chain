@@ -51,14 +51,14 @@ func TxHashes(oldTx *bc.TxData) (hashes *bc.TxHashes, err error) {
 
 	for entryID, ent := range entries {
 		switch ent := ent.(type) {
-		case *nonce:
+		case *Nonce:
 			// TODO: check time range is within network-defined limits
 			trID := ent.body.TimeRangeRef
 			trEntry, ok := entries[trID]
 			if !ok {
 				return nil, fmt.Errorf("nonce entry refers to nonexistent timerange entry")
 			}
-			tr, ok := trEntry.(*timeRange)
+			tr, ok := trEntry.(*TimeRange)
 			if !ok {
 				return nil, fmt.Errorf("nonce entry refers to %s entry, should be timerange", trEntry.Type())
 			}

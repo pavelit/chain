@@ -2,7 +2,7 @@ package tx
 
 import "chain/protocol/bc"
 
-type nonce struct {
+type Nonce struct {
 	body struct {
 		Program      bc.Program
 		TimeRangeRef bc.Hash
@@ -10,13 +10,13 @@ type nonce struct {
 	}
 }
 
-func (nonce) Type() string         { return "nonce1" }
-func (n *nonce) Body() interface{} { return n.body }
+func (Nonce) Type() string         { return "nonce1" }
+func (n *Nonce) Body() interface{} { return n.body }
 
-func (nonce) Ordinal() int { return -1 }
+func (Nonce) Ordinal() int { return -1 }
 
-func newNonce(p bc.Program, trRef bc.Hash) *nonce {
-	n := new(nonce)
+func newNonce(p bc.Program, trRef bc.Hash) *Nonce {
+	n := new(Nonce)
 	n.body.Program = p
 	n.body.TimeRangeRef = trRef
 	return n
