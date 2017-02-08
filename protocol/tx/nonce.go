@@ -4,7 +4,7 @@ import "chain/protocol/bc"
 
 type nonce struct {
 	body struct {
-		Program      program
+		Program      bc.Program
 		TimeRangeRef bc.Hash
 		ExtHash      extHash
 	}
@@ -15,7 +15,7 @@ func (n *nonce) Body() interface{} { return n.body }
 
 func (nonce) Ordinal() int { return -1 }
 
-func newNonce(p program, trRef bc.Hash) *nonce {
+func newNonce(p bc.Program, trRef bc.Hash) *nonce {
 	n := new(nonce)
 	n.body.Program = p
 	n.body.TimeRangeRef = trRef

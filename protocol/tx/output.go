@@ -5,7 +5,7 @@ import "chain/protocol/bc"
 type Output struct {
 	body struct {
 		Source         valueSource
-		ControlProgram program
+		ControlProgram bc.Program
 		DataRef        bc.Hash
 		ExtHash        extHash
 	}
@@ -17,7 +17,7 @@ func (o *Output) Body() interface{} { return o.body }
 
 func (o Output) Ordinal() int { return o.ordinal }
 
-func newOutput(source valueSource, controlProgram program, dataRef bc.Hash, ordinal int) *Output {
+func newOutput(source valueSource, controlProgram bc.Program, dataRef bc.Hash, ordinal int) *Output {
 	out := new(Output)
 	out.body.Source = source
 	out.body.ControlProgram = controlProgram

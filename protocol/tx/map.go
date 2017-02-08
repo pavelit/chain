@@ -99,7 +99,7 @@ func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *Header, entryMap map[bc.Hash]E
 				b := vmutil.NewBuilder()
 				b = b.AddData(oldIss.Nonce).AddOp(vm.OP_DROP).AddOp(vm.OP_ASSET).AddData(assetID[:]).AddOp(vm.OP_EQUAL)
 
-				nonceRef, _, err = addEntry(newNonce(program{1, b.Program}, trID))
+				nonceRef, _, err = addEntry(newNonce(bc.Program{1, b.Program}, trID))
 				if err != nil {
 					err = errors.Wrapf(err, "adding nonce entry for input %d", i)
 					return
@@ -156,7 +156,7 @@ func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *Header, entryMap map[bc.Hash]E
 			}
 		} else {
 			// non-retirement
-			prog := program{out.VMVersion, out.ControlProgram}
+			prog := bc.Program{out.VMVersion, out.ControlProgram}
 			resultID, _, err = addEntry(newOutput(s, prog, outDataRef, i))
 			if err != nil {
 				err = errors.Wrapf(err, "adding output entry for output %d", i)
