@@ -9,7 +9,7 @@ import (
 	"chain/protocol/vmutil"
 )
 
-func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *header, entryMap map[bc.Hash]Entry, err error) {
+func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *Header, entryMap map[bc.Hash]Entry, err error) {
 	var dataRef bc.Hash
 
 	entryMap = make(map[bc.Hash]Entry)
@@ -174,5 +174,5 @@ func mapTx(tx *bc.TxData) (headerID bc.Hash, hdr *header, entryMap map[bc.Hash]E
 		return
 	}
 
-	return headerID, h.(*header), entryMap, nil
+	return headerID, h.(*Header), entryMap, nil
 }

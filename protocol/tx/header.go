@@ -2,7 +2,7 @@ package tx
 
 import "chain/protocol/bc"
 
-type header struct {
+type Header struct {
 	body struct {
 		Version              uint64
 		ResultRefs           []bc.Hash
@@ -12,13 +12,13 @@ type header struct {
 	}
 }
 
-func (header) Type() string         { return "txheader" }
-func (h *header) Body() interface{} { return h.body }
+func (Header) Type() string         { return "txheader" }
+func (h *Header) Body() interface{} { return h.body }
 
-func (header) Ordinal() int { return -1 }
+func (Header) Ordinal() int { return -1 }
 
-func newHeader(version uint64, resultRefs []bc.Hash, dataRef bc.Hash, minTimeMS, maxTimeMS uint64) *header {
-	h := new(header)
+func newHeader(version uint64, resultRefs []bc.Hash, dataRef bc.Hash, minTimeMS, maxTimeMS uint64) *Header {
+	h := new(Header)
 	h.body.Version = version
 	h.body.ResultRefs = resultRefs
 	h.body.DataRef = dataRef
