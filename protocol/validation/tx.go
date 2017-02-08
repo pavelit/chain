@@ -122,7 +122,8 @@ func ConfirmTx(snapshot *state.Snapshot, initialBlockHash bc.Hash, block *bc.Blo
 //
 // Result is nil for well-formed transactions, ErrBadTx with
 // supporting detail otherwise.
-func CheckTxWellFormed(hdr *tx.Header) error {
+func CheckTxWellFormed(hdrRef tx.EntryRef) error {
+	hdr := hdrRef.Entry.(*tx.Header)
 	spends, issuances, err := hdr.Inputs()
 	if err != nil {
 		return err
@@ -215,7 +216,7 @@ func CheckTxWellFormed(hdr *tx.Header) error {
 			}
 		}
 		nonceRef := iss.Anchor()
-		nonce, ok := nonceRef.Entry.(*tx.Nonce)
+		_, ok = nonceRef.Entry.(*tx.Nonce)
 		if !ok {
 			// xxx
 		}
@@ -260,7 +261,7 @@ func CheckTxWellFormed(hdr *tx.Header) error {
 	// verifyFn returns a closure suitable for use in errgroup.Group.Go
 	verifyFn := func(e tx.EntryRef) func() error {
 		return func() error {
-			err := vm.VerifyTxInput(hdr, e)
+			err := vm.VerifyTxInput(hdrRef, e)
 			if err != nil {
 				id, _ := e.Hash()
 				return badTxErrf(err, "validation failed in script execution, input %x", id[:])

@@ -31,6 +31,13 @@ func (h *Header) Results() []EntryRef {
 	return h.body.Results
 }
 
+func (h *Header) RefDataHash() bc.Hash {
+	if h.body.Data.Entry == nil {
+		return bc.EmptyStringHash
+	}
+	return h.body.Data.Entry.(*data).body
+}
+
 // Inputs returns all input entries (as two lists: spends and
 // issuances) reachable from a header's result entries.
 func (h *Header) Inputs() (spends, issuances []EntryRef, err error) {

@@ -26,6 +26,13 @@ func (o *Output) ControlProgram() bc.Program {
 	return o.body.ControlProgram
 }
 
+func (o *Output) RefDataHash() bc.Hash {
+	if o.body.Data.Entry == nil {
+		return bc.EmptyStringHash
+	}
+	return o.body.Data.Entry.(*data).body
+}
+
 func newOutput(source valueSource, controlProgram bc.Program, data EntryRef) *Output {
 	out := new(Output)
 	out.body.Source = source
