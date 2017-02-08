@@ -8,6 +8,7 @@ import (
 	"golang.org/x/crypto/sha3"
 
 	"chain/protocol/bc"
+	"chain/protocol/tx"
 )
 
 func opCheckOutput(vm *virtualMachine) error {
@@ -90,7 +91,27 @@ func opAsset(vm *virtualMachine) error {
 		return err
 	}
 
-	assetID := vm.tx.Inputs[vm.inputIndex].AssetID()
+	var assetID bc.AssetID
+
+	switch e := vm.input.Entry.(type) {
+	case *tx.Spend:
+		oEntry := e.SpentOutput().Entry
+		if oEntry == nil {
+			// xxx error
+		}
+		o, ok := oEntry.(*tx.Output)
+		if !ok {
+			// xxx error
+		}
+		assetID = o.AssetID()
+
+	case *tx.Issuance:
+		assetID := e.AssetID()
+
+	default:
+		// xxx error
+	}
+
 	return vm.push(assetID[:], true)
 }
 
@@ -104,7 +125,27 @@ func opAmount(vm *virtualMachine) error {
 		return err
 	}
 
-	amount := vm.tx.Inputs[vm.inputIndex].Amount()
+	var amount uint64
+
+	switch e := vm.input.Entry.(type) {
+	case *tx.Spend:
+		oEntry := e.SpentOutput().Entry
+		if oEntry == nil {
+			// xxx error
+		}
+		o, ok := oEntry.(*tx.Output)
+		if !ok {
+			// xxx error
+		}
+		amount = o.Amount()
+
+	case *tx.Issuance:
+		amount := e.Amount()
+
+	default:
+		// xxx error
+	}
+
 	return vm.pushInt64(int64(amount), true)
 }
 
@@ -198,17 +239,25 @@ func opOutputID(vm *virtualMachine) error {
 		return ErrContext
 	}
 
-	outid := vm.txContext.OutputID
-	if outid == nil {
+	sp, ok := vm.input.Entry.(*tx.Spend)
+	if !ok {
 		return ErrContext
 	}
-
-	err := vm.applyCost(1)
+	if sp == nil {
+		// xxx error
+	}
+	spent := sp.SpentOutput()
+	outID, err := spent.Hash()
 	if err != nil {
 		return err
 	}
 
-	return vm.push(outid.Hash[:], true)
+	err = vm.applyCost(1)
+	if err != nil {
+		return err
+	}
+
+	return vm.push(outID[:], true)
 }
 
 func opNonce(vm *virtualMachine) error {

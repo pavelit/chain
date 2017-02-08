@@ -83,7 +83,7 @@ func (b *Builder) AddRetirement(value bc.AssetAmount, data EntryRef) *Builder {
 	return b
 }
 
-func (b *Builder) AddSpend(spentOutput bc.OutputID, value bc.AssetAmount, data EntryRef) (*Builder, EntryRef) {
+func (b *Builder) AddSpend(spentOutput EntryRef, value bc.AssetAmount, data EntryRef) (*Builder, EntryRef) {
 	sp := newSpend(spentOutput, data)
 	spID := mustEntryID(sp)
 	src := valueSource{

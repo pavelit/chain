@@ -14,6 +14,14 @@ type Issuance struct {
 func (Issuance) Type() string           { return "issuance1" }
 func (iss *Issuance) Body() interface{} { return iss.body }
 
+func (iss *Issuance) AssetID() bc.AssetID {
+	return iss.body.Value.AssetID
+}
+
+func (iss *Issuance) Amount() uint64 {
+	return iss.body.Value.Amount
+}
+
 func newIssuance(anchor EntryRef, value bc.AssetAmount, data EntryRef) *Issuance {
 	iss := new(Issuance)
 	iss.body.Anchor = anchor

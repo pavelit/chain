@@ -34,9 +34,8 @@ type virtualMachine struct {
 	dataStack [][]byte
 	altStack  [][]byte
 
-	tx        *bc.Tx
-	txContext bc.VMContext
-	input     tx.EntryRef // input.Entry must be non-nil
+	tx    *bc.Tx
+	input tx.EntryRef // input.Entry must be non-nil
 
 	block *bc.Block
 }
@@ -57,8 +56,8 @@ func VerifyTxInput(tx *bc.Tx, inputIndex uint32) (err error) {
 	return verifyTxInput(tx, inputIndex)
 }
 
-func verifyTxInput(tx *bc.Tx, input tx.EntryRef) error {
-	expansionReserved := tx.Version == 1
+func verifyTxInput(t *bc.Tx, input tx.EntryRef) error {
+	expansionReserved := t.Version == 1
 
 	inputID, err := input.Hash()
 	if err != nil {
@@ -71,9 +70,8 @@ func verifyTxInput(tx *bc.Tx, input tx.EntryRef) error {
 		}
 
 		vm := virtualMachine{
-			tx:        tx,
-			txContext: *tx.VMContexts[inputID],
-			input:     input,
+			tx:    t,
+			input: input,
 
 			expansionReserved: expansionReserved,
 
@@ -94,13 +92,23 @@ func verifyTxInput(tx *bc.Tx, input tx.EntryRef) error {
 		return wrapErr(err, &vm, args)
 	}
 
-	switch inp := txinput.TypedInput.(type) {
-	case *bc.IssuanceInput:
-		return f(inp.VMVersion, inp.IssuanceProgram, inp.Arguments)
-	case *bc.SpendInput:
-		return f(inp.VMVersion, inp.ControlProgram, inp.Arguments)
+	switch e := input.Entry.(type) {
+	case *tx.Issuance:
+		return f(e.IssuanceProgram(), e.Arguments())
+
+	case *tx.Spend:
+		oEntry := e.SpentOutput().Entry
+		if oEntry == nil {
+			// xxx error
+		}
+		o, ok := oEntry.(*tx.Output)
+		if !ok {
+			// xxx error
+		}
+		return f(o.ControlProgram(), e.Arguments())
 	}
-	return errors.WithDetailf(ErrUnsupportedTx, "transaction input %d has unknown type %T", inputIndex, txinput.TypedInput)
+
+	return errors.WithDetailf(ErrUnsupportedTx, "transaction input has unknown type %T", input.Entry)
 }
 
 func VerifyBlockHeader(prev *bc.BlockHeader, block *bc.Block) (err error) {

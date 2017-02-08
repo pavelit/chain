@@ -1,10 +1,8 @@
 package tx
 
-import "chain/protocol/bc"
-
 type Spend struct {
 	body struct {
-		SpentOutput bc.OutputID
+		SpentOutput EntryRef
 		Data        EntryRef
 		ExtHash     extHash
 	}
@@ -13,7 +11,11 @@ type Spend struct {
 func (Spend) Type() string         { return "spend1" }
 func (s *Spend) Body() interface{} { return s.body }
 
-func newSpend(spentOutput bc.OutputID, data EntryRef) *Spend {
+func (s *Spend) SpentOutput() EntryRef {
+	return s.body.SpentOutput
+}
+
+func newSpend(spentOutput, data EntryRef) *Spend {
 	s := new(Spend)
 	s.body.SpentOutput = spentOutput
 	s.body.Data = data
