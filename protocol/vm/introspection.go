@@ -106,7 +106,7 @@ func opAsset(vm *virtualMachine) error {
 		assetID = o.AssetID()
 
 	case *tx.Issuance:
-		assetID := e.AssetID()
+		assetID = e.AssetID()
 
 	default:
 		// xxx error
@@ -140,7 +140,7 @@ func opAmount(vm *virtualMachine) error {
 		amount = o.Amount()
 
 	case *tx.Issuance:
-		amount := e.Amount()
+		amount = e.Amount()
 
 	default:
 		// xxx error
@@ -268,8 +268,7 @@ func opNonce(vm *virtualMachine) error {
 		return ErrContext
 	}
 
-	txin := vm.tx.Inputs[vm.inputIndex]
-	ii, ok := txin.TypedInput.(*bc.IssuanceInput)
+	_, ok := vm.input.Entry.(*tx.Issuance)
 	if !ok {
 		return ErrContext
 	}
@@ -279,7 +278,9 @@ func opNonce(vm *virtualMachine) error {
 		return err
 	}
 
-	return vm.push(ii.Nonce, true)
+	var nonce []byte
+	// xxx
+	return vm.push(nonce, true)
 }
 
 func opNextProgram(vm *virtualMachine) error {

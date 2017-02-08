@@ -8,6 +8,11 @@ type Spend struct {
 		Data        EntryRef
 		ExtHash     extHash
 	}
+	witness struct {
+		Destination valueDestination
+		Arguments   [][]byte
+		ExtHash     extHash
+	}
 }
 
 func (Spend) Type() string         { return "spend1" }
@@ -27,6 +32,10 @@ func (s *Spend) RefDataHash() (bc.Hash, error) {
 		// xxx error
 	}
 	return d.body, nil
+}
+
+func (s *Spend) Arguments() [][]byte {
+	return s.witness.Arguments
 }
 
 func newSpend(spentOutput, data EntryRef) *Spend {

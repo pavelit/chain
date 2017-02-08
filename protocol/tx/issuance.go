@@ -9,6 +9,14 @@ type Issuance struct {
 		Data    EntryRef
 		ExtHash extHash
 	}
+	witness struct {
+		Destination     valueDestination
+		InitialBlockID  bc.Hash
+		AssetDefinition EntryRef // data entry
+		IssuanceProgram bc.Program
+		Arguments       [][]byte
+		ExtHash         extHash
+	}
 }
 
 func (Issuance) Type() string           { return "issuance1" }
@@ -32,6 +40,14 @@ func (iss *Issuance) RefDataHash() (bc.Hash, error) {
 		// xxx error
 	}
 	return d.body, nil
+}
+
+func (iss *Issuance) IssuanceProgram() bc.Program {
+	return iss.witness.IssuanceProgram
+}
+
+func (iss *Issuance) Arguments() [][]byte {
+	return iss.witness.Arguments
 }
 
 func newIssuance(anchor EntryRef, value bc.AssetAmount, data EntryRef) *Issuance {

@@ -47,25 +47,20 @@ var ErrFalseVMResult = errors.New("false VM result")
 // execution.
 var TraceOut io.Writer
 
-func VerifyTxInput(tx *bc.Tx, inputIndex uint32) (err error) {
+func VerifyTxInput(t *bc.Tx, input tx.EntryRef) (err error) {
 	defer func() {
 		if panErr := recover(); panErr != nil {
 			err = ErrUnexpected
 		}
 	}()
-	return verifyTxInput(tx, inputIndex)
+	return verifyTxInput(t, input)
 }
 
 func verifyTxInput(t *bc.Tx, input tx.EntryRef) error {
 	expansionReserved := t.Version == 1
 
-	inputID, err := input.Hash()
-	if err != nil {
-		return err
-	}
-
-	f := func(vmversion uint64, prog []byte, args [][]byte) error {
-		if vmversion != 1 {
+	f := func(prog bc.Program, args [][]byte) error {
+		if prog.VMVersion != 1 {
 			return ErrUnsupportedVM
 		}
 
@@ -75,8 +70,8 @@ func verifyTxInput(t *bc.Tx, input tx.EntryRef) error {
 
 			expansionReserved: expansionReserved,
 
-			mainprog: prog,
-			program:  prog,
+			mainprog: prog.Code,
+			program:  prog.Code,
 			runLimit: initialRunLimit,
 		}
 		for _, arg := range args {

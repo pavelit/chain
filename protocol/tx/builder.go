@@ -9,7 +9,7 @@ type (
 	// called
 	pendingOutput struct {
 		value       bc.AssetAmount
-		controlProg program
+		controlProg bc.Program
 		data        EntryRef
 	}
 
@@ -55,7 +55,7 @@ func (b *Builder) AddIssuance(nonce EntryRef, value bc.AssetAmount, data EntryRe
 	return b, EntryRef{Entry: iss, ID: &issID}
 }
 
-func (b *Builder) AddNonce(p program, timeRange EntryRef) (*Builder, EntryRef) {
+func (b *Builder) AddNonce(p bc.Program, timeRange EntryRef) (*Builder, EntryRef) {
 	n := newNonce(p, timeRange)
 	nID := mustEntryID(n)
 	b.entries[nID] = n
@@ -64,7 +64,7 @@ func (b *Builder) AddNonce(p program, timeRange EntryRef) (*Builder, EntryRef) {
 
 // AddOutput returns only the builder, unlike most other Add
 // functions, since output objects aren't created until Build
-func (b *Builder) AddOutput(value bc.AssetAmount, controlProg program, data EntryRef) *Builder {
+func (b *Builder) AddOutput(value bc.AssetAmount, controlProg bc.Program, data EntryRef) *Builder {
 	b.outputs = append(b.outputs, &pendingOutput{
 		value:       value,
 		controlProg: controlProg,
