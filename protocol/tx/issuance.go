@@ -22,6 +22,18 @@ func (iss *Issuance) Amount() uint64 {
 	return iss.body.Value.Amount
 }
 
+func (iss *Issuance) RefDataHash() (bc.Hash, error) {
+	dEntry := iss.body.Data.Entry
+	if dEntry == nil {
+		// xxx error
+	}
+	d, ok := dEntry.(*data)
+	if !ok {
+		// xxx error
+	}
+	return d.body, nil
+}
+
 func newIssuance(anchor EntryRef, value bc.AssetAmount, data EntryRef) *Issuance {
 	iss := new(Issuance)
 	iss.body.Anchor = anchor

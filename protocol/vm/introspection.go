@@ -203,7 +203,23 @@ func opRefDataHash(vm *virtualMachine) error {
 		return err
 	}
 
-	h := sha3.Sum256(vm.tx.Inputs[vm.inputIndex].ReferenceData)
+	var h bc.Hash
+
+	switch e := vm.input.Entry.(type) {
+	case *tx.Spend:
+		h, err = e.RefDataHash()
+		if err != nil {
+			return err
+		}
+	case *tx.Issuance:
+		h, err = e.RefDataHash()
+		if err != nil {
+			return err
+		}
+	default:
+		// xxx error
+	}
+
 	return vm.push(h[:], true)
 }
 
@@ -219,19 +235,6 @@ func opTxRefDataHash(vm *virtualMachine) error {
 
 	h := sha3.Sum256(vm.tx.ReferenceData)
 	return vm.push(h[:], true)
-}
-
-func opIndex(vm *virtualMachine) error {
-	if vm.tx == nil {
-		return ErrContext
-	}
-
-	err := vm.applyCost(1)
-	if err != nil {
-		return err
-	}
-
-	return vm.pushInt64(int64(vm.inputIndex), true)
 }
 
 func opOutputID(vm *virtualMachine) error {

@@ -19,7 +19,7 @@ type (
 	}
 
 	Builder struct {
-		h           *header
+		h           *Header
 		m           *mux
 		outputs     []*pendingOutput
 		retirements []*pendingRetirement
@@ -102,7 +102,7 @@ func (b *Builder) AddTimeRange(minTimeMS, maxTimeMS uint64) (*Builder, EntryRef)
 	return b, EntryRef{Entry: tr, ID: &trID}
 }
 
-func (b *Builder) Build() (bc.Hash, *header, map[bc.Hash]Entry) {
+func (b *Builder) Build() (bc.Hash, *Header, map[bc.Hash]Entry) {
 	muxID := mustEntryID(b.m)
 	b.entries[muxID] = b.m
 	var n uint64

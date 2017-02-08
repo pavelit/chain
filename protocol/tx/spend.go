@@ -1,5 +1,7 @@
 package tx
 
+import "chain/protocol/bc"
+
 type Spend struct {
 	body struct {
 		SpentOutput EntryRef
@@ -13,6 +15,18 @@ func (s *Spend) Body() interface{} { return s.body }
 
 func (s *Spend) SpentOutput() EntryRef {
 	return s.body.SpentOutput
+}
+
+func (s *Spend) RefDataHash() (bc.Hash, error) {
+	dEntry := s.body.Data.Entry
+	if dEntry == nil {
+		// xxx error
+	}
+	d, ok := dEntry.(*data)
+	if !ok {
+		// xxx error
+	}
+	return d.body, nil
 }
 
 func newSpend(spentOutput, data EntryRef) *Spend {
