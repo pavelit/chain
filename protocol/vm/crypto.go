@@ -128,7 +128,7 @@ func opCheckMultiSig(vm *virtualMachine) error {
 }
 
 func opTxSigHash(vm *virtualMachine) error {
-	if vm.tx == nil {
+	if vm.txHeader == nil {
 		return ErrContext
 	}
 	err := vm.applyCost(256)

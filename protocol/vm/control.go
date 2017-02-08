@@ -66,7 +66,7 @@ func opCheckPredicate(vm *virtualMachine) error {
 		runLimit:  limit,
 		depth:     vm.depth + 1,
 		dataStack: append([][]byte{}, vm.dataStack[l-n:]...),
-		tx:        vm.tx,
+		txHeader:  vm.txHeader,
 		input:     vm.input,
 	}
 	vm.dataStack = vm.dataStack[:l-n]

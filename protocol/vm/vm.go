@@ -34,8 +34,8 @@ type virtualMachine struct {
 	dataStack [][]byte
 	altStack  [][]byte
 
-	tx    *bc.Tx
-	input tx.EntryRef // input.Entry must be non-nil
+	txHeader *tx.Header
+	input    tx.EntryRef // input.Entry must be non-nil
 
 	block *bc.Block
 }
@@ -47,17 +47,17 @@ var ErrFalseVMResult = errors.New("false VM result")
 // execution.
 var TraceOut io.Writer
 
-func VerifyTxInput(t *bc.Tx, input tx.EntryRef) (err error) {
+func VerifyTxInput(hdr *tx.Header, input tx.EntryRef) (err error) {
 	defer func() {
 		if panErr := recover(); panErr != nil {
 			err = ErrUnexpected
 		}
 	}()
-	return verifyTxInput(t, input)
+	return verifyTxInput(hdr, input)
 }
 
-func verifyTxInput(t *bc.Tx, input tx.EntryRef) error {
-	expansionReserved := t.Version == 1
+func verifyTxInput(hdr *tx.Header, input tx.EntryRef) error {
+	expansionReserved := hdr.Version() == 1
 
 	f := func(prog bc.Program, args [][]byte) error {
 		if prog.VMVersion != 1 {
@@ -65,8 +65,8 @@ func verifyTxInput(t *bc.Tx, input tx.EntryRef) error {
 		}
 
 		vm := virtualMachine{
-			tx:    t,
-			input: input,
+			txHeader: hdr,
+			input:    input,
 
 			expansionReserved: expansionReserved,
 

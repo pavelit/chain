@@ -15,26 +15,44 @@ type Header struct {
 func (Header) Type() string         { return "txheader" }
 func (h *Header) Body() interface{} { return h.body }
 
+func (h *Header) Version() uint64 {
+	return h.body.Version
+}
+
+func (h *Header) MinTimeMS() uint64 {
+	return h.body.MinTimeMS
+}
+
+func (h *Header) MaxTimeMS() uint64 {
+	return h.body.MaxTimeMS
+}
+
+func (h *Header) Results() []EntryRef {
+	return h.body.Results
+}
+
 // Inputs returns all input entries (as two lists: spends and
 // issuances) reachable from a header's result entries.
 func (h *Header) Inputs() (spends, issuances []EntryRef, err error) {
 	sMap := make(map[bc.Hash]EntryRef)
 	iMap := make(map[bc.Hash]EntryRef)
 
-	var accum func(EntryRef)
-	accum = func(ref EntryRef) {
+	// Declare accum before assigning it, so it can reference itself
+	// recursively.
+	var accum func(EntryRef) error
+	accum = func(ref EntryRef) error {
 		switch e := ref.Entry.(type) {
 		case *Spend:
 			hash, err := ref.Hash()
 			if err != nil {
-				return nil, nil, err
+				return err
 			}
 			sMap[hash] = ref
 
 		case *Issuance:
 			hash, err := ref.Hash()
 			if err != nil {
-				return nil, nil, err
+				return err
 			}
 			iMap[hash] = ref
 
@@ -43,10 +61,14 @@ func (h *Header) Inputs() (spends, issuances []EntryRef, err error) {
 				accum(s.Ref)
 			}
 		}
+		return nil
 	}
 
 	for _, r := range h.body.Results {
-		accum(r)
+		err = accum(r)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
 
 	for _, e := range sMap {

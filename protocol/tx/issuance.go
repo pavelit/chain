@@ -30,6 +30,10 @@ func (iss *Issuance) Amount() uint64 {
 	return iss.body.Value.Amount
 }
 
+func (iss *Issuance) Anchor() EntryRef {
+	return iss.body.Anchor
+}
+
 func (iss *Issuance) RefDataHash() (bc.Hash, error) {
 	dEntry := iss.body.Data.Entry
 	if dEntry == nil {

@@ -17,9 +17,10 @@ type (
 		Body() interface{}
 	}
 
-	// EntryRef holds one or both of an entry and its id. If the entry is
-	// present and the id is not, the id can be generated (and then
-	// cached) on demand.
+	// EntryRef holds one or both of an entry and its id. If the entry
+	// is present and the id is not, the id can be generated (and then
+	// cached) on demand. Both may also be nil to represent a nil entry
+	// pointer.
 	EntryRef struct {
 		Entry
 		ID *bc.Hash
@@ -34,6 +35,9 @@ type (
 // necessary. Satisfies the hasher interface.
 func (r *EntryRef) Hash() (bc.Hash, error) {
 	if r.ID == nil {
+		if r.Entry == nil {
+			return bc.Hash{}, nil
+		}
 		h, err := entryID(r.Entry)
 		if err != nil {
 			return bc.Hash{}, err
@@ -41,6 +45,10 @@ func (r *EntryRef) Hash() (bc.Hash, error) {
 		r.ID = &h
 	}
 	return *r.ID, nil
+}
+
+func (r EntryRef) IsNil() bool {
+	return r.Entry == nil && r.ID == nil
 }
 
 type extHash bc.Hash
