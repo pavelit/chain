@@ -506,7 +506,7 @@ Field            | Type                        | Description
 -----------------|-----------------------------|----------------
 Ref              | Pointer<Issuance|Spend|Mux> | Previous entry referenced by this ValueSource.
 Value            | AssetAmount                 | Amount and Asset ID contained in the referenced entry. 
-Position         | Integer                     | TKTK
+Position         | Integer                     | Iff this source refers to a mux entry, then the Position is one of the mux's numbered Outputs. Otherwise, the position must be 0.
 
 #### ValueDestination 
 
@@ -516,7 +516,7 @@ Field            | Type                           | Description
 -----------------|--------------------------------|----------------
 Ref              | Pointer<Output|Retirement|Mux> | Next entry referenced by this ValueSource.
 Value            | AssetAmount                    | Amount and Asset ID contained in the referenced entry
-Position         | Integer                        | TKTK
+Position         | Integer                        | Iff this destination refers to a mux entry, then the Position is one of the mux's numbered Inputs. Otherwise, the position must be 0.
 
 
 #### Abstract Entry
